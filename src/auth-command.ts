@@ -8,8 +8,10 @@ import { detectActiveLocalProxyPort } from './smart-proxy.ts'
 
 type AuthCommandService = Pick<
   AntigravityAuthService,
-  'status' | 'acknowledgeRisk' | 'startLogin' | 'cancelLogin' | 'logout' | 'switchAccount'
->
+  'status' | 'acknowledgeRisk' | 'startLogin' | 'cancelLogin' | 'logout'
+> & {
+  readonly switchAccount?: (accountId: string) => Promise<unknown>
+}
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
@@ -121,8 +123,8 @@ export function createAntigravityAuthCommand(
         const targetId = operation.slice(7).trim()
         if (!targetId) return { kind: 'error', text: 'Usage: /anti switch <accountId>' }
         try {
-          const res = await service.switchAccount?.(targetId)
-          return { kind: 'success', text: `Switched account: ${res ? formatStatus(res) : targetId}` }
+          await service.switchAccount?.(targetId)
+          return { kind: 'success', text: `Switched account to ${targetId}. Run /anti status to inspect.` }
         } catch (error) {
           return { kind: 'error', text: `Failed to switch account: ${errorMessage(error)}` }
         }

@@ -419,29 +419,6 @@ function proxyAuthorizationHeader(proxy: URL): string {
   return `Proxy-Authorization: Basic ${Buffer.from(`${username}:${password}`).toString('base64')}\r\n`
 }
 
-function httpsProxy(url: URL): URL | undefined {
-  const noProxy = process.env.NO_PROXY ?? process.env.no_proxy ?? ''
-  if (matchesNoProxy(url.hostname, noProxy)) return undefined
-  const raw = process.env.HTTPS_PROXY ?? process.env.https_proxy ?? process.env.ALL_PROXY ?? process.env.all_proxy
-  if (raw === undefined || raw.length === 0) return undefined
-  try {
-    const proxy = new URL(raw)
-    if (proxy.protocol !== 'http:') throw new PrivateTransportError('offline', 'The configured HTTPS proxy protocol is unsupported', { accepted: false })
-    return proxy
-  } catch (error) {
-    if (error instanceof PrivateTransportError) throw error
-    throw new PrivateTransportError('offline', 'The configured HTTPS proxy URL is invalid', { accepted: false })
-  }
-}
-
-function matchesNoProxy(hostname: string, value: string): boolean {
-  const host = hostname.toLowerCase()
-  return value.split(',').map(item => item.trim().toLowerCase()).some(item => (
-    item === '*'
-    || (item.startsWith('.') ? host.endsWith(item) : item.length > 0 && (host === item || host.endsWith(`.${item}`)))
-  ))
-}
-
 function hasInvalidHeaderValue(value: string): boolean {
   for (let index = 0; index < value.length; index += 1) {
     const code = value.charCodeAt(index)

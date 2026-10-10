@@ -1,8 +1,7 @@
-import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
+import { describe, expect, it, beforeEach, afterEach } from 'vitest'
 import * as net from 'node:net'
 import {
   resolveEffectiveProxy,
-  resolveEffectiveProxySync,
   detectActiveLocalProxyPort,
   clearProxyProbeCache,
   formatConnectionDiagnostic,
