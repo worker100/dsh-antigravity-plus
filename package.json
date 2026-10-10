@@ -12,11 +12,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/suntianc/dsh-antigravity-plus.git"
+    "url": "git+https://github.com/worker100/dsh-antigravity-plus.git"
   },
-  "homepage": "https://github.com/suntianc/dsh-antigravity-plus#readme",
+  "homepage": "https://github.com/worker100/dsh-antigravity-plus#readme",
   "bugs": {
-    "url": "https://github.com/suntianc/dsh-antigravity-plus/issues"
+    "url": "https://github.com/worker100/dsh-antigravity-plus/issues"
   },
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
