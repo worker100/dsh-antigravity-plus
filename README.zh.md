@@ -46,33 +46,84 @@
 
 ---
 
+## 🖥️ 两种官方运行形态对比：Web GUI 与 桌面端 (Desktop)
+
+DeepSeek Harness 官方提供了两种图形界面（GUI）形态，本项目**对两者均提供了原生支持与严格验证**：
+
+| 对比维度 | **Web GUI (浏览器端)** | **Desktop (官方桌面端)** |
+|---|---|---|
+| **官方术语** | `dsh web` (Web Profile) | `desktop` Profile (Electron 客户端) |
+| **运行载体** | 本地 Node.js 服务器 + 现代浏览器 (Chrome/Edge) | 独立的 `DeepSeek Harness.exe` 桌面程序 |
+| **默认端口/入口** | 默认端口 `3080` (或指定端口如 `19387`) | 原生 Electron 窗口 + 系统托盘 (Tray) |
+| **Profile 机制** | 读取 `$DSH_HOME/profiles/web`，支持 CLI 动态增删 | **Electron 排他独占持有**，CLI 会拒绝外部修改 |
+| **最佳使用场景** | 开发者脚本化管理、快捷后台常驻、多端口部署 | 普通用户日常使用、沉浸式桌面交互体验 |
+| **插件界面表现** | 基于 Cordis 的共享 React 组件，外观与交互完全一致 | 基于 Cordis 的共享 React 组件，外观与交互完全一致 |
+
+> 💡 **特别提醒**：官方 DSH CLI 对 `desktop` Profile 实施了严格的排他保护。如果在终端执行 `dsh plugin --profile desktop add ...` 会直接被官方拦截并提示 `profile "desktop" is managed exclusively by the Electron application`。因此，桌面端必须通过修改桌面端配置或通过桌面端内置应用进行安装！
+
+---
+
 ## ⚡ 3 分钟极速上手
 
 ### 1. 环境准备
 - 已安装 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（推荐 `0.2.0-rc.2` 或最新稳定版）；
 - Node.js `>= 22.19.0`，已配置 `pnpm`；
-- 一个可用的 Google 账号。
+- 一个可用的 Google 账号；
+- （国内环境）已启动 Clash Verge（默认端口 `7897`）或经典 Clash（默认端口 `7890`）。
 
 ### 2. 安装插件
 
-#### 方式 A：Web 端安装
+#### 形态一：Web GUI（浏览器端安装）
 在终端执行以下命令将插件添加到 Web Profile：
 ```powershell
-# 如果是全新配置推荐新建 profile：
+# 推荐新建干净 profile 或使用现有 web profile：
 dsh --profile web-antigravity --from-default-profile web --no-open
 dsh plugin --profile web-antigravity add link:D:/Projects/Active-Dev/dsh-antigravity-plus
 dsh --profile web-antigravity
 ```
 
-#### 方式 B：桌面端（Desktop）安装
-1. 退出运行中的 DeepSeek Harness 桌面客户端；
+#### 形态二：Desktop 桌面端安装（避坑正解）
+由于官方桌面端的 profile 受 Electron 排他管理，请按以下安全步骤安装：
+1. 完全退出运行中的 DeepSeek Harness 桌面客户端；
 2. 打开桌面端的 profile 配置（`%USERPROFILE%\.dsh\profiles\desktop\package.json`），在 `dependencies` 中添加：
    ```json
    "dsh-antigravity-plus": "link:D:/Projects/Active-Dev/dsh-antigravity-plus"
    ```
    并在 `dsh.profile.bundles` 数组中添加 `"dsh-antigravity-plus"`；
 3. 在该目录下运行 `pnpm install`；
-4. 重新打开 DeepSeek Harness 桌面端即可。
+4. 重新启动桌面客户端即可。
+
+---
+
+## 🚀 进阶推荐：国内 Web GUI 一键启停管理脚本
+
+国内使用 Web GUI 时，常常遇到“代理还没启动 DSH 就先跑起来导致报错”或“频繁开关终端黑窗口”的问题。推荐使用以下两套批处理脚本配合桌面快捷方式：
+
+### 1. `启动-dsh-web.bat`（一键后台静默启动 + Clash健康检查 + 自动弹浏览器）
+```bat
+@echo off
+chcp 65001 >nul
+set "PORT=3080"
+set "NODE_EXE=node.exe"
+set "DSH_BIN=dsh"
+
+rem --- 1. Clash 就绪检查门禁：等待代理端口(如7897/7890)启动 ---
+powershell -NoProfile -Command "for ($i=0;$i -lt 30;$i++) { $c = [System.Net.Sockets.TcpClient]::new(); try { $t=$c.ConnectAsync('127.0.0.1', 7897); if ($t.Wait(300) -and $c.Connected) { exit 0 } } catch {} finally { $c.Dispose() }; Start-Sleep -Milliseconds 500 }; exit 1"
+if %errorlevel% neq 0 (echo 警告: 代理未启动，请先打开 Clash! & pause & exit /b 1)
+
+rem --- 2. 自动杀掉旧进程并静默后台拉起新服务 ---
+powershell -NoProfile -Command "Start-Process -FilePath '%NODE_EXE%' -ArgumentList '%DSH_BIN%','web','--port','%PORT%','--no-open' -WindowStyle Hidden"
+
+rem --- 3. 打开默认浏览器 ---
+timeout /t 2 >nul
+start http://127.0.0.1:%PORT%
+```
+
+### 2. `关闭-dsh-web.bat`（一键安全释放端口）
+```bat
+@echo off
+powershell -NoProfile -Command "$c = Get-NetTCPConnection -LocalPort 3080 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if ($c) { Stop-Process -Id $c.OwningProcess -Force }"
+```
 
 ### 3. 一键登录授权
 - **在界面登录**：打开 DSH 设置 -> 点击左侧「Antigravity」-> 在卡片中点击「开始 Antigravity 登录」，浏览器会自动弹出完成 Google 授权。

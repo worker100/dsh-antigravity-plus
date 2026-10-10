@@ -46,6 +46,22 @@ Captured on DSH `0.2.0-rc.2` Web and Official Desktop surfaces:
 
 ---
 
+## 🖥️ Official Surface Architecture: Web GUI vs Desktop
+
+DeepSeek Harness provides two official graphical surfaces:
+
+| Dimension | **Web GUI (Browser Surface)** | **Desktop (Official Electron App)** |
+|---|---|---|
+| **Official Term** | `dsh web` (Web Profile) | `desktop` Profile (Electron Client) |
+| **Runtime Host** | Local Node.js server + browser (Chrome/Edge) | Standalone `DeepSeek Harness.exe` binary |
+| **Port / Entrance** | Default `3080` (or custom port like `19387`) | Native window with system tray integration |
+| **Profile Management** | Stored in `$DSH_HOME/profiles/web`, CLI dynamic | **Exclusively managed by Electron** |
+| **Component Presentation** | Shared Cordis React cards & streaming gauges | Shared Cordis React cards & streaming gauges |
+
+> ⚠️ **Note**: DSH CLI prevents manual modifications to the `desktop` profile from the terminal (reporting `profile "desktop" is managed exclusively by the Electron application`). To link this plugin to Desktop, register it directly in the desktop `package.json` file as shown below.
+
+---
+
 ## ⚡ Quickstart
 
 ### 1. Prerequisites
