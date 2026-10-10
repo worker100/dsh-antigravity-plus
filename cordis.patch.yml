@@ -1,0 +1,10 @@
+# dsh-antigravity-plus: Enhanced Antigravity capability bundle
+- insert:
+    - id: antigravity-plus-auth
+      name: 'dsh-antigravity-plus'
+    - id: antigravity-plus-search
+      name: 'dsh-antigravity-plus/search'
+    - id: antigravity-plus-image
+      name: 'dsh-antigravity-plus/image'
+    - id: antigravity-plus-video
+      name: 'dsh-antigravity-plus/video'
