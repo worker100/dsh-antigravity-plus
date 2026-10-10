@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createAntigravityAuthCommand } from '../src/auth-command.ts'
+import { createAntigravityAuthCommand, createAntiCommand } from '../src/auth-command.ts'
 import type { LogoutResult } from '../src/credential-coordinator.ts'
 import type { LoginActionResult, LoginStartResult } from '../src/login-types.ts'
 import type { LoopbackRpcMode } from '../src/loopback-rpc.ts'
@@ -244,7 +244,7 @@ describe('Antigravity auth command', () => {
 
     await expect(command.handler({ rawInput: 'device' } as never)).resolves.toEqual({
       kind: 'error',
-      text: 'unknown operation "device" (available: status, login, cancel, logout)',
+      text: 'unknown operation "device" (available: status, login, cancel, logout, switch, list, proxy)',
     })
     expect(service.acknowledgeRisk).not.toHaveBeenCalled()
     expect(service.startLogin).not.toHaveBeenCalled()
@@ -284,4 +284,36 @@ describe('Antigravity auth command', () => {
       expect(openUrl).not.toHaveBeenCalled()
     },
   )
+
+  it('supports switch, list, proxy subcommands and anti alias', async () => {
+    const service = {
+      ...emptyService(),
+      switchAccount: vi.fn(async () => configuredStatus()),
+      status: vi.fn(async () => ({
+        ...configuredStatus(),
+        accounts: [
+          { id: 'acc-1', email: 'acc1@gmail.com', projectId: 'proj-1', addedAt: '', active: true },
+          { id: 'acc-2', email: 'acc2@gmail.com', projectId: 'proj-2', addedAt: '', active: false },
+        ],
+      })),
+    }
+    const { command } = makeHarness(service)
+    const antiCmd = createAntiCommand(service as never, () => 'enabled')
+    expect(antiCmd.name).toBe('anti')
+
+    // list accounts
+    const listRes = await command.handler({ rawInput: 'list' } as never)
+    expect(listRes.kind).toBe('success')
+    expect(listRes.text).toContain('acc1@gmail.com')
+
+    // switch account
+    const switchRes = await command.handler({ rawInput: 'switch acc-2' } as never)
+    expect(switchRes.kind).toBe('success')
+    expect(service.switchAccount).toHaveBeenCalledWith('acc-2')
+
+    // proxy status
+    const proxyRes = await command.handler({ rawInput: 'proxy' } as never)
+    expect(proxyRes.kind).toBe('success')
+    expect(proxyRes.text).toContain('Smart Proxy')
+  })
 })

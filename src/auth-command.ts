@@ -4,10 +4,11 @@ import type { AntigravityAuthService } from './auth-service.ts'
 import { ACCOUNT_COMMAND_DENIED_MESSAGE, type LoopbackRpcMode } from './loopback-rpc.ts'
 import { openAuthorizationUrl } from './open-authorization-url.ts'
 import type { AntigravityStatusView } from './status.ts'
+import { detectActiveLocalProxyPort } from './smart-proxy.ts'
 
 type AuthCommandService = Pick<
   AntigravityAuthService,
-  'status' | 'acknowledgeRisk' | 'startLogin' | 'cancelLogin' | 'logout'
+  'status' | 'acknowledgeRisk' | 'startLogin' | 'cancelLogin' | 'logout' | 'switchAccount'
 >
 
 function errorMessage(error: unknown): string {
@@ -116,7 +117,57 @@ export function createAntigravityAuthCommand(
           return { kind: 'error', text: `logging out of Antigravity failed: ${errorMessage(error)}` }
         }
       }
-      return { kind: 'error', text: `unknown operation "${operation}" (available: status, login, cancel, logout)` }
+      if (operation.startsWith('switch ')) {
+        const targetId = operation.slice(7).trim()
+        if (!targetId) return { kind: 'error', text: 'Usage: /anti switch <accountId>' }
+        try {
+          const res = await service.switchAccount?.(targetId)
+          return { kind: 'success', text: `Switched account: ${res ? formatStatus(res) : targetId}` }
+        } catch (error) {
+          return { kind: 'error', text: `Failed to switch account: ${errorMessage(error)}` }
+        }
+      }
+      if (operation === 'list' || operation === 'accounts') {
+        try {
+          const st = await service.status()
+          const accs = st.accounts ?? []
+          if (accs.length === 0) return { kind: 'success', text: 'No accounts stored. Run /anti login to add one.' }
+          const lines = accs.map((a, i) => `${i + 1}. [${a.active ? 'ACTIVE' : 'IDLE'}] ${a.email ?? a.id} (Project: ${a.projectId})`)
+          return { kind: 'success', text: lines.join('\n') }
+        } catch (error) {
+          return { kind: 'error', text: `Failed to list accounts: ${errorMessage(error)}` }
+        }
+      }
+      if (operation === 'proxy') {
+        try {
+          const port = await detectActiveLocalProxyPort()
+          if (port) {
+            return { kind: 'success', text: `Smart Proxy: Active local proxy detected on port ${port} (http://127.0.0.1:${port})` }
+          }
+          const envProxy = process.env.HTTPS_PROXY ?? process.env.ALL_PROXY
+          if (envProxy) {
+            return { kind: 'success', text: `Smart Proxy: Using environment proxy ${envProxy}` }
+          }
+          return { kind: 'success', text: 'Smart Proxy: Direct connection (no local proxy detected or abroad)' }
+        } catch (error) {
+          return { kind: 'error', text: `Failed to check proxy: ${errorMessage(error)}` }
+        }
+      }
+      return { kind: 'error', text: `unknown operation "${operation}" (available: status, login, cancel, logout, switch, list, proxy)` }
     },
+  }
+}
+
+export function createAntiCommand(
+  service: AuthCommandService,
+  accountMode: () => LoopbackRpcMode,
+  openUrl: (url: string) => boolean | Promise<boolean> = openAuthorizationUrl,
+): CommandDefinition {
+  const base = createAntigravityAuthCommand(service, accountMode, openUrl)
+  return {
+    ...base,
+    name: 'anti',
+    description: 'Quick Antigravity+ command (status/login/switch/proxy)',
+    input: { hint: '[status|login|switch|list|proxy]' },
   }
 }

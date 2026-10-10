@@ -7,7 +7,7 @@ import type {} from '@deepseek-ai/dsh-commands'
 import type {} from '@deepseek-ai/dsh-host-webserver'
 import type {} from '@deepseek-ai/dsh-llm'
 import { createAntigravityAuthService } from './auth-service.ts'
-import { createAntigravityAuthCommand } from './auth-command.ts'
+import { createAntigravityAuthCommand, createAntiCommand } from './auth-command.ts'
 import { AntigravityAdapter, ANTIGRAVITY_PROVIDER, type AntigravityRuntimeEvent } from './llm-adapter.ts'
 import { defaultAuthStorePath } from './auth-store.ts'
 import { registerAccountRoutes } from './account-routes.ts'
@@ -97,7 +97,10 @@ export function apply(ctx: Context): void {
     cleanup: unprovide,
     label: 'antigravity-auth: OAuth and LLM operations',
   })
-  ctx.inject(['commands'], commandCtx => commandCtx.commands.register(createAntigravityAuthCommand(service, () => accountMode)))
+  ctx.inject(['commands'], commandCtx => {
+    commandCtx.commands.register(createAntigravityAuthCommand(service, () => accountMode))
+    commandCtx.commands.register(createAntiCommand(service, () => accountMode))
+  })
 }
 
 export * from './auth-service.ts'
