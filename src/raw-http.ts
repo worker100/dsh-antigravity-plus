@@ -8,6 +8,7 @@ import * as tls from 'node:tls'
 import { createGunzip } from 'node:zlib'
 import { PrivateTransportError } from './private-transport-error.ts'
 import { createWireIdentity } from './wire-identity.ts'
+import { resolveEffectiveProxy } from './smart-proxy.ts'
 
 const DEFAULT_HTTPS_PORT = 443
 const DEFAULT_PROXY_PORT = 8080
@@ -67,7 +68,7 @@ export function createRawPrivateDispatcher(): (input: RawPrivateRequest) => Prom
 }
 
 async function connectTls(url: URL, timeoutMs: number, signal: AbortSignal | undefined): Promise<tls.TLSSocket> {
-  const proxy = httpsProxy(url)
+  const proxy = await resolveEffectiveProxy(url)
   return proxy === undefined
     ? connectDirect(url, timeoutMs, signal)
     : connectThroughProxy(proxy, url, timeoutMs, signal)

@@ -9,7 +9,7 @@ const AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth?state=te
 
 function idleStatus(): AntigravityStatusView {
   return {
-    pluginId: 'dsh-antigravity-auth',
+    pluginId: 'dsh-antigravity-plus',
     phase: 'bootstrap',
     privateSelfUse: true,
     singleAccount: false,
@@ -22,7 +22,7 @@ function idleStatus(): AntigravityStatusView {
 
 function configuredStatus(): AntigravityStatusView {
   return {
-    pluginId: 'dsh-antigravity-auth',
+    pluginId: 'dsh-antigravity-plus',
     phase: 'bootstrap',
     privateSelfUse: true,
     singleAccount: false,
@@ -43,7 +43,7 @@ function configuredStatus(): AntigravityStatusView {
 
 function pendingStatus(): AntigravityStatusView {
   return {
-    pluginId: 'dsh-antigravity-auth',
+    pluginId: 'dsh-antigravity-plus',
     phase: 'bootstrap',
     privateSelfUse: true,
     singleAccount: false,
