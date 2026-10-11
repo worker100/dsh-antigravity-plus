@@ -21,7 +21,7 @@ afterEach(() => {
 
 function gateStatus(id: 'search' | 'image' | 'video', state: 'available' | 'poc-pending' | 'protocol-drift') {
   return {
-    plugin: 'dsh-antigravity-auth',
+    plugin: 'dsh-antigravity-plus',
     mode: 'private-single-account',
     riskAcknowledged: true,
     login: { phase: 'success', configured: true, projectAvailable: true },
@@ -48,7 +48,7 @@ describe('bootstrap lifecycle boundary', () => {
     expect(setTimeout).not.toHaveBeenCalled()
     expect(handle).toHaveBeenCalledTimes(ACCOUNT_RPC_ENDPOINTS.length)
     expect(handle.mock.calls[0]).toHaveLength(1)
-    expect(handle.mock.calls[0]?.[0].path).toBe('/api/antigravity-auth/status')
+    expect(handle.mock.calls[0]?.[0].path).toBe('/api/antigravity-plus/status')
 
     const registration = handle.mock.results[0]?.value as (() => void) | undefined
     registration?.()
@@ -75,7 +75,7 @@ describe('bootstrap lifecycle boundary', () => {
     const route = handle.mock.calls[0]![0]
     const response = await route.fetch(new Request('http://dsh.test' + route.path, {
       method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ type: 'client-request', rpcId: 'denied', method: 'antigravity-auth/status', payload: { forbidden: 'value' } }),
+      body: JSON.stringify({ type: 'client-request', rpcId: 'denied', method: 'antigravity-plus/status', payload: { forbidden: 'value' } }),
     }))
     const body = await response.json() as { result: unknown }
     expect(body.result).toEqual({
@@ -115,7 +115,7 @@ describe('bootstrap lifecycle boundary', () => {
       const authPath = defaultAuthStorePath()
       const record = await createAuthStore(authPath).commit({ refreshToken: 'refresh', projectId: 'project' })
       const subject = record.lineage!
-      const gates = createFileCapabilityGates(join(root, 'dsh-antigravity-auth', 'gates.json'))
+      const gates = createFileCapabilityGates(join(root, 'dsh-antigravity-plus', 'gates.json'))
       await gates.recordGate0(subject, 'passed')
       await gates.recordLlmFamily(subject, 'gemini', 'passed')
       await gates.recordLlmFamily(subject, 'claude', 'passed')
@@ -313,7 +313,7 @@ describe('bootstrap lifecycle boundary', () => {
       const result = await registered!.handler({ rawInput: 'status' } as never)
       expect(result.kind).toBe('success')
       if (result.kind === 'success') {
-        expect(result.text?.startsWith('Antigravity auth:')).toBe(true)
+        expect(result.text?.startsWith('Antigravity Plus:')).toBe(true)
         expect(result.text).not.toContain('require a local DSH Host')
       }
     } finally {
@@ -341,7 +341,7 @@ describe('bootstrap lifecycle boundary', () => {
       const result = await registered!.handler({ rawInput: 'status' } as never)
       expect(result.kind).toBe('success')
       if (result.kind === 'success') {
-        expect(result.text?.startsWith('Antigravity auth:')).toBe(true)
+        expect(result.text?.startsWith('Antigravity Plus:')).toBe(true)
         expect(result.text).not.toContain('require a local DSH Host')
       }
     } finally {
@@ -369,7 +369,7 @@ describe('bootstrap lifecycle boundary', () => {
       const result = await registered!.handler({ rawInput: 'status' } as never)
       expect(result.kind).toBe('success')
       if (result.kind === 'success') {
-        expect(result.text?.startsWith('Antigravity auth:')).toBe(true)
+        expect(result.text?.startsWith('Antigravity Plus:')).toBe(true)
         expect(result.text).not.toContain('require a local DSH Host')
       }
     } finally {

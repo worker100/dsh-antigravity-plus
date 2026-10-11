@@ -24,7 +24,7 @@ export const SAFE_RPC_ERROR_CODES = [
 export type SafeRpcErrorCode = (typeof SAFE_RPC_ERROR_CODES)[number]
 
 const SAFE_RPC_ERROR_MESSAGES: Readonly<Partial<Record<SafeRpcErrorCode, string>>> = Object.freeze({
-  'bad-request': 'antigravity-auth: invalid request',
+  'bad-request': 'antigravity-plus: invalid request',
   'loopback-required': 'Antigravity account controls require a loopback-bound DSH Host',
   cancelled: 'The operation was cancelled',
   'risk-acknowledgement-required': 'Risk acknowledgement is required before login',
@@ -68,5 +68,5 @@ export function isSafeRpcErrorCode(value: unknown): value is SafeRpcErrorCode {
 }
 
 export function safeRpcErrorMessage(code: SafeRpcErrorCode | LoginErrorCode): string {
-  return SAFE_RPC_ERROR_MESSAGES[code] ?? 'antigravity-auth: operation failed'
+  return SAFE_RPC_ERROR_MESSAGES[code] ?? 'antigravity-plus: operation failed'
 }

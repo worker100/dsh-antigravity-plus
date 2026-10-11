@@ -13,7 +13,6 @@ import { ProjectDiscoveryError, normalizeProjectId } from './project-context.ts'
 import type { ProjectDiscoveryErrorCode } from './project-context.ts'
 import type { LoginCompletionResult, LoginErrorCode, LoginPhase, LoginStartResult } from './login-types.ts'
 import { isBoundedSafeText } from './safe-text.ts'
-import { createSmartFetch } from './smart-proxy.ts'
 
 export const ANTIGRAVITY_CALLBACK_PORT = 51121 as const
 export const ANTIGRAVITY_CALLBACK_PATH = '/oauth-callback' as const
@@ -149,7 +148,7 @@ export function createOAuthFlow(options: OAuthFlowOptions = {}): OAuthFlow {
   const clock = options.clock ?? systemClock()
   const random = options.randomBytes ?? ((size: number) => nodeRandomBytes(size))
   const listenerFactory = options.listenerFactory ?? createNodeLoopbackListenerFactory()
-  const exchangeCode = options.exchangeCode ?? createGoogleTokenExchanger(options.fetchImpl ?? createSmartFetch(), clock)
+  const exchangeCode = options.exchangeCode ?? createGoogleTokenExchanger(options.fetchImpl ?? fetch, clock)
   const validateProject = options.validateProject ?? (async () => undefined)
   const commit = options.commit ?? (async () => {})
   const ttlMs = options.ttlMs ?? OAUTH_FLOW_TTL_MS

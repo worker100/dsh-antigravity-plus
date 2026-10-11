@@ -8,7 +8,6 @@ import * as tls from 'node:tls'
 import { createGunzip } from 'node:zlib'
 import { PrivateTransportError } from './private-transport-error.ts'
 import { createWireIdentity } from './wire-identity.ts'
-import { resolveEffectiveProxy } from './smart-proxy.ts'
 
 const DEFAULT_HTTPS_PORT = 443
 const DEFAULT_PROXY_PORT = 8080
@@ -68,7 +67,7 @@ export function createRawPrivateDispatcher(): (input: RawPrivateRequest) => Prom
 }
 
 async function connectTls(url: URL, timeoutMs: number, signal: AbortSignal | undefined): Promise<tls.TLSSocket> {
-  const proxy = await resolveEffectiveProxy(url)
+  const proxy = httpsProxy(url)
   return proxy === undefined
     ? connectDirect(url, timeoutMs, signal)
     : connectThroughProxy(proxy, url, timeoutMs, signal)
@@ -417,6 +416,29 @@ function proxyAuthorizationHeader(proxy: URL): string {
     throw new PrivateTransportError('offline', 'The configured HTTPS proxy credentials are invalid', { accepted: false })
   }
   return `Proxy-Authorization: Basic ${Buffer.from(`${username}:${password}`).toString('base64')}\r\n`
+}
+
+function httpsProxy(url: URL): URL | undefined {
+  const noProxy = process.env.NO_PROXY ?? process.env.no_proxy ?? ''
+  if (matchesNoProxy(url.hostname, noProxy)) return undefined
+  const raw = process.env.HTTPS_PROXY ?? process.env.https_proxy ?? process.env.ALL_PROXY ?? process.env.all_proxy
+  if (raw === undefined || raw.length === 0) return undefined
+  try {
+    const proxy = new URL(raw)
+    if (proxy.protocol !== 'http:') throw new PrivateTransportError('offline', 'The configured HTTPS proxy protocol is unsupported', { accepted: false })
+    return proxy
+  } catch (error) {
+    if (error instanceof PrivateTransportError) throw error
+    throw new PrivateTransportError('offline', 'The configured HTTPS proxy URL is invalid', { accepted: false })
+  }
+}
+
+function matchesNoProxy(hostname: string, value: string): boolean {
+  const host = hostname.toLowerCase()
+  return value.split(',').map(item => item.trim().toLowerCase()).some(item => (
+    item === '*'
+    || (item.startsWith('.') ? host.endsWith(item) : item.length > 0 && (host === item || host.endsWith(`.${item}`)))
+  ))
 }
 
 function hasInvalidHeaderValue(value: string): boolean {

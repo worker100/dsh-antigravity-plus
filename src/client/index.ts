@@ -32,16 +32,16 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 }
 /** Register one disposable settings section and no capability controls. */
 export function apply(ctx: ClientContext): void {
-  ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'antigravity-auth: copy dictionaries')
+  ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'antigravity-plus: copy dictionaries')
 
   const connection = ctx.get('connection') as unknown as ConnectionHandle
   if (!connection.isLoopback) return
   const rpc = createAntigravityAuthRpcClient(connection.rpc)
   const t = ctx.locale.bind(NS) as AntigravityAuthSettingsProps['t']
   const configForms = (ctx as ClientContext & { configForms?: { get<T>(entryId: string): ConfigForm<T> } }).configForms
-  const searchScope = configForms?.get<AntigravitySearchSettings>('antigravity-search')
-  const imageScope = configForms?.get<AntigravityImageSettings>('antigravity-image')
-  const videoScope = configForms?.get<AntigravityVideoSettings>('antigravity-video')
+  const searchScope = configForms?.get<AntigravitySearchSettings>('antigravity-plus-search')
+  const imageScope = configForms?.get<AntigravityImageSettings>('antigravity-plus-image')
+  const videoScope = configForms?.get<AntigravityVideoSettings>('antigravity-plus-video')
   const listeners = new Set<() => void>()
   const subscribe = (listener: () => void): (() => void) => {
     listeners.add(listener)
@@ -50,11 +50,11 @@ export function apply(ctx: ClientContext): void {
   const reset = (): void => {
     for (const listener of listeners) listener()
   }
-  ctx.effect(() => ctx.on('connection/reset', reset), 'antigravity-auth: connection invalidation')
+  ctx.effect(() => ctx.on('connection/reset', reset), 'antigravity-plus: connection invalidation')
 
   ctx.slots.inject('settings.section', () => ctx.slots.register({
     name: 'settings.section',
-    id: 'antigravity-auth',
+    id: 'antigravity-plus',
     order: 20,
     label: () => t('nav'),
     inject: (): AntigravityAuthSettingsProps => ({ rpc, t, subscribe, searchScope, imageScope, videoScope }),

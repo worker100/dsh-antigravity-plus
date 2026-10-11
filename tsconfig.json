@@ -6,8 +6,8 @@
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "dsh-antigravity-auth": ["src/index.ts"],
-      "dsh-antigravity-auth/*": ["src/*"]
+      "dsh-antigravity-plus": ["src/index.ts"],
+      "dsh-antigravity-plus/*": ["src/*"]
     },
     "strict": true,
     "noUncheckedIndexedAccess": true,

@@ -322,13 +322,13 @@ describe('Antigravity login RPC', () => {
 
     expect(client).not.toHaveProperty('completeCallback')
     expect(rpc.call.mock.calls.map(call => call.slice(0, 3))).toEqual([
-      ['/api', 'antigravity-auth/status', {}],
-      ['/api', 'antigravity-auth/acknowledge-risk', { acknowledge: true }],
-      ['/api', 'antigravity-auth/login', {}],
-      ['/api', 'antigravity-auth/cancel', {}],
-      ['/api', 'antigravity-auth/logout', {}],
-      ['/api', 'antigravity-auth/revoke', { confirmed: true }],
-      ['/api', 'antigravity-auth/models', { force: true }],
+      ['/api', 'antigravity-plus/status', {}],
+      ['/api', 'antigravity-plus/acknowledge-risk', { acknowledge: true }],
+      ['/api', 'antigravity-plus/login', {}],
+      ['/api', 'antigravity-plus/cancel', {}],
+      ['/api', 'antigravity-plus/logout', {}],
+      ['/api', 'antigravity-plus/revoke', { confirmed: true }],
+      ['/api', 'antigravity-plus/models', { force: true }],
     ])
   })
 
@@ -361,7 +361,7 @@ describe('Antigravity login RPC', () => {
       ok: false,
       error: {
         code: 'internal',
-        message: 'antigravity-auth: invalid login response from Host',
+        message: 'antigravity-plus: invalid login response from Host',
         details: {},
       },
     })
@@ -399,7 +399,7 @@ describe('Antigravity login RPC', () => {
       ok: false,
       error: {
         code: 'internal',
-        message: 'antigravity-auth: invalid status response from Host',
+        message: 'antigravity-plus: invalid status response from Host',
         details: {},
       },
     })
@@ -407,7 +407,7 @@ describe('Antigravity login RPC', () => {
       ok: false,
       error: {
         code: 'internal',
-        message: 'antigravity-auth: operation failed',
+        message: 'antigravity-plus: operation failed',
         details: {},
       },
     })
@@ -415,7 +415,7 @@ describe('Antigravity login RPC', () => {
       ok: false,
       error: {
         code: 'internal',
-        message: 'antigravity-auth: invalid status response from Host',
+        message: 'antigravity-plus: invalid status response from Host',
         details: {},
       },
     })

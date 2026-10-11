@@ -1,9 +1,9 @@
 /** English and Chinese copy for the private bootstrap settings section. */
 
 export const en = {
-  nav: 'Antigravity',
-  title: 'Antigravity Auth',
-  intro: 'Sign in with Antigravity Auth to access language models, image generation, web search, and video understanding.',
+  nav: 'Antigravity Plus',
+  title: 'Antigravity Plus',
+  intro: 'Sign in with Antigravity Plus to access language models, image generation, web search, and video understanding.',
   riskTitle: 'Before you continue',
   risk: 'Google does not support third-party Antigravity login tools. Your account may be suspended or terminated.',
   terms: 'Review the Google FAQ before continuing.',
@@ -127,23 +127,14 @@ export const en = {
   remaining: 'remaining',
   refreshesIn: 'Refreshes in {time}',
   quotaDayUnit: 'd',
-  proxyTitle: 'Network & Proxy Settings',
-  proxyIntro: 'Configure how requests reach Google services. Mainland China users should use Auto Detect or enter Clash/v2rayN ports; users abroad can select Direct.',
-  proxyModeAuto: 'Auto Detect (Sniffs Clash 7890/7897, v2rayN 10809, or ENV)',
-  proxyModeDirect: 'Direct Connection (Abroad / TUN mode)',
-  proxyModeManual: 'Custom Proxy Address',
-  proxyPlaceholder: 'e.g. http://127.0.0.1:7890',
-  proxyActive: 'Active Proxy:',
-  proxySave: 'Save Proxy',
-  proxySaved: 'Proxy settings saved.',
 } as const
 
 export type AntigravityAuthKey = keyof typeof en
 
 export const zh: Record<AntigravityAuthKey, string> = {
-  nav: 'Antigravity',
-  title: 'Antigravity Auth',
-  intro: '通过 Antigravity Auth 登录，使用语言模型、图片生成、网页搜索和视频理解能力。',
+  nav: 'Antigravity Plus',
+  title: 'Antigravity Plus',
+  intro: '通过 Antigravity Plus 登录，使用语言模型、图片生成、网页搜索和视频理解能力。',
   riskTitle: '继续前请确认',
   risk: 'Google 不支持第三方 Antigravity 登录工具，账号可能被暂停或终止。',
   terms: '继续前请阅读 Google FAQ。',
@@ -267,13 +258,4 @@ export const zh: Record<AntigravityAuthKey, string> = {
   remaining: '剩余',
   refreshesIn: '{time} 后刷新',
   quotaDayUnit: '天',
-  proxyTitle: '网络代理设置',
-  proxyIntro: '配置访问 Google 与 Antigravity 服务的网络代理。国内用户推荐使用「自动检测」或填写 Clash / v2rayN 端口；海外用户请选择「直接连接」。',
-  proxyModeAuto: '智能自动检测（自动识别 Clash 7890/7897、v2rayN 10809 或系统环境变量）',
-  proxyModeDirect: '直接连接（海外直连 / TUN 虚拟网卡模式）',
-  proxyModeManual: '手动指定代理地址',
-  proxyPlaceholder: '例如 http://127.0.0.1:7890',
-  proxyActive: '当前生效代理：',
-  proxySave: '保存代理设置',
-  proxySaved: '代理设置已保存。',
 }

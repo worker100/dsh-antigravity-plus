@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createAntigravityAuthCommand, createAntiCommand } from '../src/auth-command.ts'
+import { createAntigravityAuthCommand } from '../src/auth-command.ts'
 import type { LogoutResult } from '../src/credential-coordinator.ts'
 import type { LoginActionResult, LoginStartResult } from '../src/login-types.ts'
 import type { LoopbackRpcMode } from '../src/loopback-rpc.ts'
@@ -90,7 +90,7 @@ describe('Antigravity auth command', () => {
 
     await expect(command.handler({ rawInput: '' } as never)).resolves.toEqual({
       kind: 'success',
-      text: 'Antigravity auth: not configured; no project',
+      text: 'Antigravity Plus: not configured; no project',
     })
     expect(service.startLogin).not.toHaveBeenCalled()
     expect(openUrl).not.toHaveBeenCalled()
@@ -105,7 +105,7 @@ describe('Antigravity auth command', () => {
 
     await expect(command.handler({ rawInput: 'status' } as never)).resolves.toEqual({
       kind: 'success',
-      text: 'Antigravity auth: configured; project available; z***@gmail.com; available: auth-llm',
+      text: 'Antigravity Plus: configured; project available; z***@gmail.com; available: auth-llm',
     })
   })
 
@@ -118,7 +118,7 @@ describe('Antigravity auth command', () => {
 
     await expect(command.handler({ rawInput: '' } as never)).resolves.toEqual({
       kind: 'success',
-      text: 'Antigravity auth: not configured; no project; authorization pending',
+      text: 'Antigravity Plus: not configured; no project; authorization pending',
     })
   })
 
@@ -139,7 +139,7 @@ describe('Antigravity auth command', () => {
     const result = await command.handler({ rawInput: ' login ' } as never)
     expect(result).toEqual({
       kind: 'success',
-      text: 'Antigravity authorization started (unofficial Antigravity channel, personal use); complete Google sign-in in the opened browser, then run /antigravity-auth status.',
+      text: 'Antigravity authorization started (unofficial Antigravity channel, personal use); complete Google sign-in in the opened browser, then run /antigravity-plus status.',
     })
     // The URL is delivered to the host browser, never into the session's
     // command/done event (the result text persists verbatim; the URL carries
@@ -172,7 +172,7 @@ describe('Antigravity auth command', () => {
 
     expect(result).toEqual({
       kind: 'error',
-      text: 'Antigravity authorization started, but this Host could not open a browser automatically; complete sign-in in a browser on this Host, then run /antigravity-auth status.',
+      text: 'Antigravity authorization started, but this Host could not open a browser automatically; complete sign-in in a browser on this Host, then run /antigravity-plus status.',
     })
     expect(openUrl).toHaveBeenCalledExactlyOnceWith(AUTHORIZATION_URL)
     expect(JSON.stringify(result)).not.toContain(AUTHORIZATION_URL)
@@ -198,7 +198,7 @@ describe('Antigravity auth command', () => {
 
     expect(result).toEqual({
       kind: 'success',
-      text: 'Previous Antigravity authorization cancelled and a new one started (unofficial Antigravity channel, personal use); complete Google sign-in in the opened browser, then run /antigravity-auth status.',
+      text: 'Previous Antigravity authorization cancelled and a new one started (unofficial Antigravity channel, personal use); complete Google sign-in in the opened browser, then run /antigravity-plus status.',
     })
     // `startLogin` owns the cancel-then-start transition, matching the Web card.
     expect(service.acknowledgeRisk).toHaveBeenCalledTimes(1)
@@ -244,7 +244,7 @@ describe('Antigravity auth command', () => {
 
     await expect(command.handler({ rawInput: 'device' } as never)).resolves.toEqual({
       kind: 'error',
-      text: 'unknown operation "device" (available: status, login, cancel, logout, switch, list, proxy)',
+      text: 'unknown operation "device" (available: status, login, cancel, logout)',
     })
     expect(service.acknowledgeRisk).not.toHaveBeenCalled()
     expect(service.startLogin).not.toHaveBeenCalled()
@@ -284,36 +284,4 @@ describe('Antigravity auth command', () => {
       expect(openUrl).not.toHaveBeenCalled()
     },
   )
-
-  it('supports switch, list, proxy subcommands and anti alias', async () => {
-    const service = {
-      ...emptyService(),
-      switchAccount: vi.fn(async () => configuredStatus()),
-      status: vi.fn(async () => ({
-        ...configuredStatus(),
-        accounts: [
-          { id: 'acc-1', email: 'acc1@gmail.com', projectId: 'proj-1', addedAt: '', active: true },
-          { id: 'acc-2', email: 'acc2@gmail.com', projectId: 'proj-2', addedAt: '', active: false },
-        ],
-      })),
-    }
-    const { command } = makeHarness(service)
-    const antiCmd = createAntiCommand(service as never, () => 'enabled')
-    expect(antiCmd.name).toBe('anti')
-
-    // list accounts
-    const listRes = await command.handler({ rawInput: 'list' } as never)
-    expect(listRes.kind).toBe('success')
-    expect(listRes.text).toContain('acc1@gmail.com')
-
-    // switch account
-    const switchRes = await command.handler({ rawInput: 'switch acc-2' } as never)
-    expect(switchRes.kind).toBe('success')
-    expect(service.switchAccount).toHaveBeenCalledWith('acc-2')
-
-    // proxy status
-    const proxyRes = await command.handler({ rawInput: 'proxy' } as never)
-    expect(proxyRes.kind).toBe('success')
-    expect(proxyRes.text).toContain('Smart Proxy')
-  })
 })

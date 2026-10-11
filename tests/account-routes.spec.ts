@@ -25,7 +25,7 @@ it('serves authenticated account RPC on the real Connection Host and disposes it
     })
     const cookie = headers.get('set-cookie')?.split(';', 1)[0]
     expect(cookie).toBeDefined()
-    const namespace = 'antigravity-auth'
+    const namespace = 'antigravity-plus'
     const channel = '/api/' + namespace
     const dispose = registerAccountRoutes(ctx.connection, namespace, ['status'], createLoopbackRpcGuard('127.0.0.1', delegate).handler)
     const send = (body: unknown, authenticated = true, contentType = 'application/json', origin?: string) => fetch(baseUrl + channel + '/status', {

@@ -5,7 +5,7 @@ import {
   DSH_ATTRIBUTION_HEADER,
   WireIdentityError,
   createWireIdentity,
-} from 'dsh-antigravity-auth/wire-identity'
+} from 'dsh-antigravity-plus/wire-identity'
 
 const { attributionHeadersMock } = vi.hoisted(() => ({ attributionHeadersMock: vi.fn() }))
 vi.mock('@deepseek-ai/dsh-llm', () => ({

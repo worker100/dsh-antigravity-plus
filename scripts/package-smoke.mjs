@@ -43,7 +43,7 @@ try {
     throw new Error('package smoke: Antigravity core changed without a separate audit')
   }
   const changelog = await readFile(resolve(packageRoot, 'CHANGELOG.md'), 'utf8')
-  if (!changelog.includes(`## [${String(manifest.version)}]`)) {
+  if (!changelog.includes(`## ${String(manifest.version)}`)) {
     throw new Error(`package smoke: CHANGELOG.md lacks release ${String(manifest.version)}`)
   }
   const retiredPackages = new Set([
@@ -69,7 +69,7 @@ try {
     throw new Error('package smoke: Cordis or Schemastery peer baseline does not match DSH 0.2.0-rc.2')
   }
   const patch = await readFile(resolve(packageRoot, 'cordis.patch.yml'), 'utf8')
-  for (const row of ['antigravity-auth', 'antigravity-search', 'antigravity-image', 'antigravity-video']) {
+  for (const row of ['antigravity-plus', 'antigravity-plus-search', 'antigravity-plus-image', 'antigravity-plus-video']) {
     if (!patch.includes(`id: ${row}`)) throw new Error(`package smoke: patch lacks independent row ${row}`)
   }
   if (patch.includes('deepseek-harness')) throw new Error('package smoke: patch unexpectedly mentions DSH core')

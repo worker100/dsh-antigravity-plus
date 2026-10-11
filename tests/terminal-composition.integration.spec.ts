@@ -75,15 +75,15 @@ function stubOpenerSpawn(): { child: EventEmitter & { unref: ReturnType<typeof v
   return { child }
 }
 
-describe('antigravity-auth slash command on a terminal composition (no WebServer/connection)', () => {
+describe('antigravity-plus slash command on a terminal composition (no WebServer/connection)', () => {
   it('dispatches status through the real command runtime to the shared auth service', async () => {
     const { ctx, agent } = await mountTerminal()
 
-    const execution = await ctx.commands.execute(agent, '/antigravity-auth status', [], new AbortController().signal)
+    const execution = await ctx.commands.execute(agent, '/antigravity-plus status', [], new AbortController().signal)
 
     expect(execution?.result.kind).toBe('success')
     if (execution?.result.kind === 'success') {
-      expect(execution.result.text).toContain('Antigravity auth:')
+      expect(execution.result.text).toContain('Antigravity Plus:')
       expect(execution.result.text).not.toContain('require a local DSH Host')
     }
   })
@@ -91,7 +91,7 @@ describe('antigravity-auth slash command on a terminal composition (no WebServer
   it('dispatches cancel through the real command runtime into the shared auth service', async () => {
     const { ctx, agent } = await mountTerminal()
 
-    const execution = await ctx.commands.execute(agent, '/antigravity-auth cancel', [], new AbortController().signal)
+    const execution = await ctx.commands.execute(agent, '/antigravity-plus cancel', [], new AbortController().signal)
 
     // No authorization is pending on this fresh store, so the shared service
     // reports the idle phase; the text proves the handler reached the service
@@ -114,7 +114,7 @@ describe('antigravity-auth slash command on a terminal composition (no WebServer
     })
     const { child } = stubOpenerSpawn()
 
-    const execution = await ctx.commands.execute(agent, '/antigravity-auth login', [], new AbortController().signal)
+    const execution = await ctx.commands.execute(agent, '/antigravity-plus login', [], new AbortController().signal)
 
     expect(execution?.result.kind).toBe('success')
     if (execution?.result.kind === 'success') {

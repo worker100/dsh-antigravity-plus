@@ -7,7 +7,7 @@ import type {} from '@deepseek-ai/dsh-commands'
 import type {} from '@deepseek-ai/dsh-host-webserver'
 import type {} from '@deepseek-ai/dsh-llm'
 import { createAntigravityAuthService } from './auth-service.ts'
-import { createAntigravityAuthCommand, createAntiCommand } from './auth-command.ts'
+import { createAntigravityAuthCommand } from './auth-command.ts'
 import { AntigravityAdapter, ANTIGRAVITY_PROVIDER, type AntigravityRuntimeEvent } from './llm-adapter.ts'
 import { defaultAuthStorePath } from './auth-store.ts'
 import { registerAccountRoutes } from './account-routes.ts'
@@ -17,7 +17,7 @@ import {
 } from './loopback-rpc.ts'
 import { mountCapabilityLifecycle } from './capability-lifecycle.ts'
 
-export const name = 'antigravity-auth'
+export const name = 'antigravity-plus'
 export const inject = ['llm', 'attachments']
 
 export const ACCOUNT_RPC_ENDPOINTS = [
@@ -67,7 +67,7 @@ export function apply(ctx: Context): void {
       const code = event.code === undefined ? '' : ` code=${event.code}`
       const accepted = event.accepted === undefined ? '' : ` accepted=${String(event.accepted)}`
       const status = event.status === undefined ? '' : ` status=${String(event.status)}`
-      connectionCtx.logger.warn(`antigravity-auth: runtime phase=${event.phase}${model}${code}${accepted}${status}`)
+      connectionCtx.logger.warn(`antigravity-plus: runtime phase=${event.phase}${model}${code}${accepted}${status}`)
     }
     const webServer = connectionCtx.get('webServer')
     accountMode = commandAccountMode(webServer)
@@ -76,7 +76,7 @@ export function apply(ctx: Context): void {
       (endpoint, payload, signal) => handleAntigravityAuthRpc(service, endpoint, payload, signal, adapter),
     )
     if (guard.mode === 'blocked') {
-      connectionCtx.logger.warn('antigravity-auth: account RPC is disabled because the WebServer is not loopback-bound')
+      connectionCtx.logger.warn('antigravity-plus: account RPC is disabled because the WebServer is not loopback-bound')
     }
     return registerAccountRoutes(connectionCtx.connection, ANTIGRAVITY_AUTH_RPC_NAMESPACE, ACCOUNT_RPC_ENDPOINTS, guard.handler)
   })
@@ -95,12 +95,9 @@ export function apply(ctx: Context): void {
     },
     ownsAuth: true,
     cleanup: unprovide,
-    label: 'antigravity-auth: OAuth and LLM operations',
+    label: 'antigravity-plus: OAuth and LLM operations',
   })
-  ctx.inject(['commands'], commandCtx => {
-    commandCtx.commands.register(createAntigravityAuthCommand(service, () => accountMode))
-    commandCtx.commands.register(createAntiCommand(service, () => accountMode))
-  })
+  ctx.inject(['commands'], commandCtx => commandCtx.commands.register(createAntigravityAuthCommand(service, () => accountMode)))
 }
 
 export * from './auth-service.ts'

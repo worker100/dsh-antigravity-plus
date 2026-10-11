@@ -11,7 +11,7 @@
  * sign-in from the terminal (documented limitation; no public Host API exists
  * to close it).
  *
- * @module antigravity-auth/open-authorization-url
+ * @module antigravity-plus/open-authorization-url
  */
 
 import { spawn, type ChildProcess } from 'node:child_process'
