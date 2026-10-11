@@ -8,14 +8,23 @@
 
 > **✨ Enhanced Antigravity Suite for DeepSeek Harness**: An all-in-one capability bundle designed for official [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) Web and Desktop clients. Featuring **Smart Proxy Auto-Sniffing**, **Multi-Account Quota Failover**, and an **Omni-Modal Tool Suite**.
 
+## Current Usage and Release Status (2026-10-11)
+
+- **Currently enabled in Desktop**: `dsh-antigravity-auth v0.1.4-rc.6` (a locally linked package). It uses the Host's `HTTPS_PROXY` / `ALL_PROXY` environment variables; it does not scan common local proxy ports such as `127.0.0.1:7890/7897/10809`. The active Desktop plugin has passed account reads, quota reads, and one minimal text model request.
+- **This Plus repository**: The package is `dsh-antigravity-plus`; its current fixes are in [PR #2](https://github.com/worker100/dsh-antigravity-plus/pull/2). It prioritizes Host proxy environment variables, then probes common local HTTP proxy ports. `/anti proxy` reports the route actually selected.
+- **Deployment status**: Plus is present in the Desktop profile's dependency list only. It is not in `dsh.profile.bundles`, so Desktop does not load it. PR #2's offline checks and proxy tunnel regression tests pass; the repaired Plus build has not yet passed Desktop OAuth, quota-read, and model-request acceptance. The PR remains Draft, and Plus is not the current stable Desktop version.
+- **Project direction**: This GitHub repository currently contains the Plus implementation, not the older package running in Desktop. Adopting and renaming the older package as the long-term baseline would require a separate review of package name, DSH bundle identity, account-store migration, and rollback. A display-name change alone does not switch Desktop and should not be mixed into this proxy-fix release.
+
+The feature list below describes **the Plus code in this repository**. The features currently available in Desktop come from the active `dsh-antigravity-auth` bundle.
+
 ---
 
 ## 🌟 Highlights & Capabilities
 
 ### 1. 🚀 Smart Proxy Engine
-- **Local Proxy Port Sniffing**: Automatically discovers active local proxies such as **Clash / Clash Verge (`7890`/`7897`)**, **v2rayN (`10809`)**, and **Surge (`6152`)** without requiring manual operating system environment variables.
-- **Direct & TUN Fallback**: Overseas users or environments running TUN virtual network adapters connect directly with zero overhead.
-- **Automatic Routing**: Uses the Host's HTTP proxy environment variables first, then checks known local HTTP proxy ports. The settings panel reports how to inspect the selected route with `/anti proxy`; it does not expose inactive manual controls.
+- **Local Proxy Port Sniffing**: When the Host has no `HTTPS_PROXY` / `ALL_PROXY`, probes `127.0.0.1` ports `7890`, `7897`, `10809`, `6152`, and `2080` in order. This only checks whether a port accepts a connection; it does not identify the user's region, VPN/TUN state, or whether the proxy node can reach Google.
+- **Automatic Routing**: Honors `NO_PROXY`, then uses Host `HTTPS_PROXY` / `ALL_PROXY`, then probes the listed local HTTP proxy ports. If none match, it connects directly. `/anti proxy` reports the route selected by the plugin; the settings panel has no manual proxy URL input.
+- **Direct Fallback**: Direct connection means no configured or detected proxy matched. It does not mean the plugin detected an overseas network or TUN mode.
 - **Diagnostic Guidance**: Human-friendly error reporting that distinguishes temporary network dropouts from expired authentication credentials.
 
 ### 2. 🔄 Multi-Account Quota Failover & Auto-Healing
@@ -48,7 +57,7 @@ Captured on DSH `0.2.0-rc.2` Web and Official Desktop surfaces:
 
 ## 🖥️ Official Surface Architecture: Web GUI vs Desktop
 
-DeepSeek Harness provides two official graphical surfaces:
+DeepSeek Harness provides two official graphical surfaces. This plugin can be installed in Web and Desktop profiles; whether a particular build has passed live acceptance is stated in the current status section above:
 
 | Dimension | **Web GUI (Browser Surface)** | **Desktop (Official Electron App)** |
 |---|---|---|
