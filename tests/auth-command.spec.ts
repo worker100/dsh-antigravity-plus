@@ -311,9 +311,15 @@ describe('Antigravity auth command', () => {
     expect(switchRes.kind).toBe('success')
     expect(service.switchAccount).toHaveBeenCalledWith('acc-2')
 
-    // proxy status
-    const proxyRes = await command.handler({ rawInput: 'proxy' } as never)
-    expect(proxyRes.kind).toBe('success')
-    expect(proxyRes.text).toContain('Smart Proxy')
+    // Proxy status reports the selected environment route but omits userinfo.
+    vi.stubEnv('HTTPS_PROXY', 'http://user:secret@127.0.0.1:7897')
+    try {
+      const proxyRes = await command.handler({ rawInput: 'proxy' } as never)
+      expect(proxyRes.kind).toBe('success')
+      expect(proxyRes.text).toBe('Smart Proxy: Using environment proxy http://127.0.0.1:7897')
+      expect(proxyRes.text).not.toContain('secret')
+    } finally {
+      vi.unstubAllEnvs()
+    }
   })
 })

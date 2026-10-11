@@ -4,6 +4,7 @@ import {
   resolveEffectiveProxy,
   detectActiveLocalProxyPort,
   clearProxyProbeCache,
+  inspectEffectiveProxy,
   formatConnectionDiagnostic,
   matchesNoProxy,
 } from '../src/smart-proxy.ts'
@@ -48,6 +49,17 @@ describe('Smart Proxy Engine', () => {
       { HTTPS_PROXY: 'http://127.0.0.1:7890' },
     )
     expect(proxy?.href).toBe('http://127.0.0.1:7890/')
+  })
+
+  it('reports the effective environment route without exposing proxy credentials', async () => {
+    const details = await inspectEffectiveProxy(
+      new URL('https://oauth2.googleapis.com/'),
+      { HTTPS_PROXY: 'http://user:secret@127.0.0.1:7897' },
+    )
+
+    expect(details.source).toBe('environment')
+    expect(details.proxy?.origin).toBe('http://127.0.0.1:7897')
+    expect(details.proxy?.origin).not.toContain('secret')
   })
 
   it('sniffs local active proxy port when a local server is listening', async () => {

@@ -68,8 +68,6 @@ export function AntigravityAuthSettings({ rpc, t, subscribe, searchScope, imageS
   const [loginBusy, setLoginBusy] = useState(false)
   const [actionBusy, setActionBusy] = useState(false)
   const [resetTick, setResetTick] = useState(0)
-  const [proxyMode, setProxyMode] = useState<'auto' | 'direct' | 'manual'>('auto')
-  const [customProxyUrl, setCustomProxyUrl] = useState('')
   const statusGeneration = useRef(0)
   const quotaGeneration = useRef(0)
   const unmountSignal = useUnmountSignal()
@@ -431,49 +429,7 @@ export function AntigravityAuthSettings({ rpc, t, subscribe, searchScope, imageS
               <p className="agy-card-intro">{t('proxyIntro')}</p>
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
-              <input
-                type="radio"
-                name="proxyMode"
-                value="auto"
-                checked={proxyMode === 'auto'}
-                onChange={() => setProxyMode('auto')}
-              />
-              {t('proxyModeAuto')}
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
-              <input
-                type="radio"
-                name="proxyMode"
-                value="direct"
-                checked={proxyMode === 'direct'}
-                onChange={() => setProxyMode('direct')}
-              />
-              {t('proxyModeDirect')}
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
-              <input
-                type="radio"
-                name="proxyMode"
-                value="manual"
-                checked={proxyMode === 'manual'}
-                onChange={() => setProxyMode('manual')}
-              />
-              {t('proxyModeManual')}
-            </label>
-            {proxyMode === 'manual' ? (
-              <div style={{ marginTop: '6px' }}>
-                <input
-                  type="text"
-                  placeholder={t('proxyPlaceholder')}
-                  value={customProxyUrl}
-                  onChange={e => setCustomProxyUrl(e.target.value)}
-                  style={{ width: '100%', padding: '6px 10px', borderRadius: '4px', border: '1px solid var(--dsh-border, #ccc)' }}
-                />
-              </div>
-            ) : null}
-          </div>
+          <p className="agy-card-intro" role="status" style={{ marginTop: '8px' }}>{t('proxyAutoNotice')}</p>
         </article>
 
         {/* Card 2: Web Search */}

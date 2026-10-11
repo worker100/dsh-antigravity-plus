@@ -11,6 +11,11 @@ export interface SmartProxyConfig {
   readonly customProxy?: string
 }
 
+export interface EffectiveProxyDetails {
+  readonly proxy?: URL
+  readonly source: 'bypass' | 'environment' | 'local-detected' | 'direct'
+}
+
 export const COMMON_LOCAL_PROXY_PORTS = Object.freeze([
   7890,  // Clash / Clash for Windows / Clash Verge default
   7897,  // Mihomo Party / Clash Verge Rev new default
@@ -132,13 +137,28 @@ export async function resolveEffectiveProxy(
   }
 
   // 5. Smart auto-detection of local proxy ports (Clash 7890/7897, v2rayN 10809, etc.)
-  const detectedPort = await detectActiveLocalProxyPort()
-  if (detectedPort !== undefined) {
-    return new URL(`http://127.0.0.1:${detectedPort}`)
+  return (await inspectEffectiveProxy(url, env)).proxy
+}
+
+/** Report the same environment/auto route used by requests, without exposing proxy credentials. */
+export async function inspectEffectiveProxy(
+  url: URL,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<EffectiveProxyDetails> {
+  const noProxy = env.NO_PROXY ?? env.no_proxy ?? ''
+  if (matchesNoProxy(url.hostname, noProxy)) return { source: 'bypass' }
+
+  const envRaw = env.HTTPS_PROXY ?? env.https_proxy ?? env.ALL_PROXY ?? env.all_proxy
+  if (typeof envRaw === 'string' && envRaw.trim().length > 0) {
+    return { proxy: parseAndValidateProxyUrl(envRaw.trim()), source: 'environment' }
   }
 
-  // 6. Direct connection (Abroad or no proxy detected)
-  return undefined
+  const detectedPort = await detectActiveLocalProxyPort()
+  if (detectedPort !== undefined) {
+    return { proxy: new URL(`http://127.0.0.1:${detectedPort}`), source: 'local-detected' }
+  }
+
+  return { source: 'direct' }
 }
 
 /** Synchronous fallback resolution using only env and explicit config (no async sniffing). */

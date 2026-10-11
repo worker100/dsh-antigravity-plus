@@ -15,7 +15,7 @@
 ### 1. 🚀 Smart Proxy Engine
 - **Local Proxy Port Sniffing**: Automatically discovers active local proxies such as **Clash / Clash Verge (`7890`/`7897`)**, **v2rayN (`10809`)**, and **Surge (`6152`)** without requiring manual operating system environment variables.
 - **Direct & TUN Fallback**: Overseas users or environments running TUN virtual network adapters connect directly with zero overhead.
-- **Visual Settings**: Easily switch between *Auto*, *Direct*, and *Custom* proxy modes in the DSH settings panel.
+- **Automatic Routing**: Uses the Host's HTTP proxy environment variables first, then checks known local HTTP proxy ports. The settings panel reports how to inspect the selected route with `/anti proxy`; it does not expose inactive manual controls.
 - **Diagnostic Guidance**: Human-friendly error reporting that distinguishes temporary network dropouts from expired authentication credentials.
 
 ### 2. 🔄 Multi-Account Quota Failover & Auto-Healing

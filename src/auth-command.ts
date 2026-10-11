@@ -4,7 +4,7 @@ import type { AntigravityAuthService } from './auth-service.ts'
 import { ACCOUNT_COMMAND_DENIED_MESSAGE, type LoopbackRpcMode } from './loopback-rpc.ts'
 import { openAuthorizationUrl } from './open-authorization-url.ts'
 import type { AntigravityStatusView } from './status.ts'
-import { detectActiveLocalProxyPort } from './smart-proxy.ts'
+import { inspectEffectiveProxy } from './smart-proxy.ts'
 
 type AuthCommandService = Pick<
   AntigravityAuthService,
@@ -142,15 +142,17 @@ export function createAntigravityAuthCommand(
       }
       if (operation === 'proxy') {
         try {
-          const port = await detectActiveLocalProxyPort()
-          if (port) {
-            return { kind: 'success', text: `Smart Proxy: Active local proxy detected on port ${port} (http://127.0.0.1:${port})` }
+          const details = await inspectEffectiveProxy(new URL('https://oauth2.googleapis.com/'))
+          if (details.source === 'bypass') {
+            return { kind: 'success', text: 'Smart Proxy: Direct connection (target is covered by NO_PROXY)' }
           }
-          const envProxy = process.env.HTTPS_PROXY ?? process.env.ALL_PROXY
-          if (envProxy) {
-            return { kind: 'success', text: `Smart Proxy: Using environment proxy ${envProxy}` }
+          if (details.source === 'environment' && details.proxy) {
+            return { kind: 'success', text: `Smart Proxy: Using environment proxy ${details.proxy.origin}` }
           }
-          return { kind: 'success', text: 'Smart Proxy: Direct connection (no local proxy detected or abroad)' }
+          if (details.source === 'local-detected' && details.proxy) {
+            return { kind: 'success', text: `Smart Proxy: Active local HTTP proxy detected on port ${details.proxy.port}` }
+          }
+          return { kind: 'success', text: 'Smart Proxy: Direct connection (no proxy configured or detected)' }
         } catch (error) {
           return { kind: 'error', text: `Failed to check proxy: ${errorMessage(error)}` }
         }
