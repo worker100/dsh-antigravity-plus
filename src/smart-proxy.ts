@@ -322,6 +322,10 @@ async function executeHttpsOverProxy(proxy: URL, targetUrl: URL, init?: RequestI
           }
 
           const remainder = chunk.subarray(Buffer.byteLength(headReceived.slice(0, delim + 4), 'latin1'))
+          if (remainder.length > 0) {
+            proxySocket.unshift(remainder)
+          }
+          proxySocket.resume()
           const tlsSocket = tls.connect({
             socket: proxySocket,
             servername: targetUrl.hostname,
@@ -374,9 +378,6 @@ async function executeHttpsOverProxy(proxy: URL, targetUrl: URL, init?: RequestI
             })
           })
 
-          if (remainder.length > 0) {
-            proxySocket.unshift(remainder)
-          }
         }
       }
 
