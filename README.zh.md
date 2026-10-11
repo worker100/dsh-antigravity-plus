@@ -11,6 +11,7 @@
 ## 当前使用与发布状态（2026-10-11）
 
 - **桌面端当前启用版本**：`dsh-antigravity-auth v0.1.4-rc.6`（本地链接包）。它通过 Host 的 `HTTPS_PROXY` / `ALL_PROXY` 环境变量使用代理；没有自动扫描 Clash、v2rayN 等常见本机代理端口的功能。当前桌面端已验证账号读取、额度读取和一次最小文本模型请求。
+- **旧版代码所含能力**：Antigravity 登录与多账号管理、模型路由、额度卡片、`web_search`、`generate_image` / `list_images`、`analyze_video`。这说明代码包含这些功能，不代表本轮都完成了实机验收；搜索、图片、视频以及多账号切换本轮未单独复测。
 - **本仓库 Plus**：包名为 `dsh-antigravity-plus`，当前修复在 PR [#2](https://github.com/worker100/dsh-antigravity-plus/pull/2)。它实现 Host 代理环境变量优先、再自动探测常见本机 HTTP 代理端口，并可用 `/anti proxy` 查看实际选中的路由。
 - **部署状态**：Plus 目前仅安装在桌面 profile 的依赖清单中，没有加入 `dsh.profile.bundles`，因此桌面端并未加载它。PR #2 的离线检查和代理隧道回归测试通过；修复后的 Plus 尚未完成桌面端 OAuth、额度读取和模型请求验收，因此该 PR 保持 Draft，Plus 不能称为当前桌面稳定版本。
 - **项目方向说明**：这个 GitHub 仓库目前保存的是 Plus 实现，不是桌面端正在运行的旧包。若决定以旧包作为长期基线并改名，需要另行评估包名、DSH bundle 标识、账号存储迁移和回滚路径；仅改显示名称不等于桌面端已切换，也不应与本 PR 的代理修复混成一次发布。
