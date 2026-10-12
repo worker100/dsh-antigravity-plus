@@ -1,136 +1,62 @@
-# dsh-antigravity-plus (Antigravity+)
+# DSH Antigravity Plus
 
-[![npm version](https://img.shields.io/npm/v/dsh-antigravity-plus.svg?style=flat-square)](https://www.npmjs.com/package/dsh-antigravity-plus)
-[![license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
-[![DSH Compatibility](https://img.shields.io/badge/DSH-0.2.0--rc.2-emerald.svg?style=flat-square)](https://github.com/deepseek-ai/deepseek-harness)
+Antigravity account and capability plugin for DeepSeek Harness (DSH). This repository packages the stable `dsh-antigravity-auth` implementation under the project name **DSH Antigravity Plus**. The package is currently an unreleased `0.2.0-rc.1` candidate; no npm release has been published.
 
-**English** | [简体中文](README.zh.md)
+> **Unofficial integration:** this plugin uses private Antigravity endpoints. Google does not support third-party login tools; use it only if you accept the account and availability risks. Endpoint changes can interrupt service.
 
-> **✨ Enhanced Antigravity Suite for DeepSeek Harness**: An all-in-one capability bundle designed for official [DeepSeek Harness (DSH)](https://github.com/deepseek-ai/deepseek-harness) Web and Desktop clients. Featuring **Smart Proxy Auto-Sniffing**, **Multi-Account Quota Failover**, and an **Omni-Modal Tool Suite**.
+## Features
 
----
+- Google OAuth login, local logout, and explicit Google grant revocation.
+- Multiple saved accounts with manual add, switch, and removal. The plugin does not rotate accounts in the background.
+- Antigravity model routing and account model availability refresh.
+- Five-hour and weekly quota display with manual refresh.
+- Optional grounded web search, image generation/editing, and video understanding capabilities, subject to their capability gates and provider support.
+- Host-side credential handling. Token values are not sent to the browser settings UI.
 
-## 🌟 Highlights & Capabilities
+The Desktop settings panel and account store come from the stable auth implementation. The Plus name is applied to the package, bundle, UI, and commands. The plugin prefers an existing `dsh-antigravity-auth` account store so the stable plugin can be restored without moving credentials. If that store is absent, it reuses an existing `dsh-antigravity-plus` store. It never copies or deletes either store.
 
-### 1. 🚀 Smart Proxy Engine
-- **Local Proxy Port Sniffing**: Automatically discovers active local proxies such as **Clash / Clash Verge (`7890`/`7897`)**, **v2rayN (`10809`)**, and **Surge (`6152`)** without requiring manual operating system environment variables.
-- **Direct & TUN Fallback**: Overseas users or environments running TUN virtual network adapters connect directly with zero overhead.
-- **Visual Settings**: Easily switch between *Auto*, *Direct*, and *Custom* proxy modes in the DSH settings panel.
-- **Diagnostic Guidance**: Human-friendly error reporting that distinguishes temporary network dropouts from expired authentication credentials.
+## Network proxy
 
-### 2. 🔄 Multi-Account Quota Failover & Auto-Healing
-- **Bounded Failover**: Automatically rotates to the next available bound account upon receiving `429` (Quota Exhausted) before any stream output has been committed.
-- **Instant Switching**: Change active accounts with a single click in the UI or via `/anti switch <id>`.
-- **Host-Only Secure Storage**: Credentials remain strictly on the host file system with OS-level permissions (Windows ACL / POSIX 0600).
-- **Seamless Migration**: Automatically detects and imports legacy `dsh-antigravity-auth` credentials on initial startup.
+The plugin does **not** detect country or VPN status, scan local ports, guess a proxy address, or show a proxy configuration panel. Its private HTTPS transport reads `HTTPS_PROXY` / `https_proxy`, then `ALL_PROXY` / `all_proxy`; it honors `NO_PROXY` / `no_proxy`. The configured proxy must use an HTTP proxy URL. A SOCKS-only URL is not supported by this transport.
 
-### 3. 🎨 Omni-Modal Model & Tool Suite
-- **Comprehensive Model Support**: Native routing for Gemini 3.8 Flash (Low/Medium/High thinking budgets), Gemini 3.1 Pro, Claude 3.7 Sonnet, Claude Opus, and GPT-OSS.
-- **Grounded Web Search (`web_search`)**: Dispatches grounded search queries with verified citations.
-- **Image Generation & Gallery (`generate_image` / `list_images`)**: Persistent workspace image generation with multi-image reference inputs.
-- **Video Understanding (`analyze_video`)**: Multimodal frame sampling and reasoning on local MP4 video files.
+If a mainland China network cannot reach the provider directly, configure the HTTP or mixed port exposed by your proxy application in the Windows **user** environment. Example PowerShell commands (replace the example port with the HTTP/mixed port shown by your proxy app):
 
-### 4. 📊 Elegant Usage Dashboard
-- **Real-Time Usage Visualizer**: 5-hour and weekly quota bars with Emerald, Amber, and Crimson warning tones.
-- **Humanized Countdown**: Times exceeding 24 hours are displayed naturally (e.g. `3d 22h 43m`).
-
----
-
-## 📸 Screenshots
-
-Captured on DSH `0.2.0-rc.2` Web and Official Desktop surfaces:
-
-| Web Settings & Usage Dashboard | Desktop Usage Metrics |
-|:---:|:---:|
-| ![Web Screenshot](docs/screenshots/antigravity-web.png) | ![Desktop Screenshot](docs/screenshots/antigravity-desktop.png) |
-
----
-
-## 🖥️ Official Surface Architecture: Web GUI vs Desktop
-
-DeepSeek Harness provides two official graphical surfaces:
-
-| Dimension | **Web GUI (Browser Surface)** | **Desktop (Official Electron App)** |
-|---|---|---|
-| **Official Term** | `dsh web` (Web Profile) | `desktop` Profile (Electron Client) |
-| **Runtime Host** | Local Node.js server + browser (Chrome/Edge) | Standalone `DeepSeek Harness.exe` binary |
-| **Port / Entrance** | Default `3080` (or custom port like `19387`) | Native window with system tray integration |
-| **Profile Management** | Stored in `$DSH_HOME/profiles/web`, CLI dynamic | **Exclusively managed by Electron** |
-| **Component Presentation** | Shared Cordis React cards & streaming gauges | Shared Cordis React cards & streaming gauges |
-
-> ⚠️ **Note**: DSH CLI prevents manual modifications to the `desktop` profile from the terminal (reporting `profile "desktop" is managed exclusively by the Electron application`). To link this plugin to Desktop, register it directly in the desktop `package.json` file as shown below.
-
----
-
-## ⚡ Quickstart
-
-### 1. Prerequisites
-- [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`0.2.0-rc.2` or later recommended);
-- Node.js `>= 22.19.0` with `pnpm`;
-- A Google account with Antigravity access.
-
-### 2. Installation
-
-#### Web Surface
 ```powershell
-dsh --profile web-antigravity --from-default-profile web --no-open
-dsh plugin --profile web-antigravity add link:D:/Projects/Active-Dev/dsh-antigravity-plus
-dsh --profile web-antigravity
+[Environment]::SetEnvironmentVariable('HTTPS_PROXY', 'http://127.0.0.1:PORT', 'User')
+[Environment]::SetEnvironmentVariable('HTTP_PROXY', 'http://127.0.0.1:PORT', 'User')
+[Environment]::SetEnvironmentVariable('NO_PROXY', 'localhost,127.0.0.1,::1', 'User')
 ```
 
-#### Official Desktop Surface
-1. Exit the running DeepSeek Harness desktop application.
-2. Open `%USERPROFILE%\.dsh\profiles\desktop\package.json`, and add the dependency:
-   ```json
-   "dependencies": {
-     "dsh-antigravity-plus": "link:D:/Projects/Active-Dev/dsh-antigravity-plus"
-   }
-   ```
-   Add `"dsh-antigravity-plus"` to `dsh.profile.bundles`.
-3. Run `pnpm install` in that profile directory.
-4. Launch the desktop application.
+`HTTPS_PROXY` is the important variable for this plugin's private requests. `HTTP_PROXY` helps other DSH requests. The plugin does not infer a port from Clash, VPN, TUN, or other software. After changing persistent variables, fully exit DSH Desktop, including its tray process, then start it again so the Host inherits the new environment. See the [DSH app-boot environment guide](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/boot/app-boot/README.md) for DSH's general environment loading behavior.
 
-### 3. Authorization
-- **Via Settings UI**: Open Settings -> Click `Antigravity` -> Click `Start Antigravity login` to open Google OAuth in your default browser.
-- **Via Slash Command**:
-  ```text
-  /anti login
-  ```
+## Install from a source checkout
 
----
+For Desktop, install and switch bundles through the application's **Plugins** page. The Electron app owns its `desktop` profile; the standalone CLI does not manage that profile. For CLI-managed Web or headless profiles, use the DSH CLI documented for that installation. See the [official Desktop guide](https://github.com/deepseek-ai/deepseek-harness/blob/master/apps/desktop/README.md) and [plugin manager guide](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/boot/plugin-manager/README.md). Before switching an existing installation, preserve the legacy auth dependency and account data directory until the Plus bundle has passed acceptance.
 
-## ⌨️ Slash Commands (`/anti`)
+See [the reusable Agent installation prompt](docs/agent-install-prompt.zh.md) for profile discovery, backup, switch, and rollback instructions in Chinese.
 
-| Command | Description |
-|---|---|
-| `/anti` / `/anti status` | Display current account status, active models, and capabilities |
-| `/anti login` | Initiate Google OAuth PKCE authorization |
-| `/anti list` | List all bound accounts and identify the active account |
-| `/anti switch <account>` | Switch active account immediately |
-| `/anti proxy` | Inspect proxy detection status and active port |
-| `/anti logout` | Clear active memory credentials and log out locally |
-| `/anti cancel` | Cancel pending authorization |
+## Commands
 
----
+On DSH surfaces with the command runtime:
 
-## 🔒 Security & Privacy
+```text
+/antigravity-plus                 # status
+/antigravity-plus login           # start Google OAuth
+/antigravity-plus cancel          # cancel pending login
+/antigravity-plus logout          # clear local account state
+```
 
-- **Host-Confined Secrets**: Tokens, authorization codes, and refresh secrets are stored strictly on the Host and never dispatched to client browsers, logs, or LLM context prompts.
-- **PKCE S256**: Standards-compliant OAuth 2.0 PKCE flow with single-use loopback binding strictly on `127.0.0.1:51121`.
-- **Disclaimer**: Unofficial community adapter for experimental personal development. Please review Google Antigravity Terms of Service.
+## Development
 
----
+Requires Node.js `^22.19.0 || >=24.0.0` and pnpm `11.7.0`.
 
-## 🙏 Acknowledgments
+```sh
+pnpm install --frozen-lockfile
+pnpm check
+```
 
-This project builds upon the foundational research of the community:
+`pnpm check` runs lint, type checking, unit tests, build, package smoke checks, and publint. Live provider requests are separate and require explicit authorization and a signed-in account.
 
-- **[dsh-antigravity-auth](https://github.com/suntianc/dsh-antigravity-auth)**: Pioneer architecture for DSH Antigravity integration and contract definitions.
-- **[@cortexkit/antigravity-auth](https://github.com/cortexkit/antigravity-auth)**: Invaluable reverse-engineering insights on private Cloud Code contracts.
-- **[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)**: The extensible Agent Harness foundation.
+## License
 
----
-
-## 📄 License
-
-Released under the [MIT License](LICENSE).
+MIT. See [LICENSE](LICENSE).

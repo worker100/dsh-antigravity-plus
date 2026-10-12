@@ -1,4 +1,4 @@
-import { chmod, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { chmod, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -19,7 +19,30 @@ async function storeFixture() {
 describe('multi-account Antigravity auth store', () => {
   it('uses the Windows local application-data path when running on Windows', () => {
     expect(defaultAuthStorePath({ LOCALAPPDATA: '/user/local-app-data' }, undefined, 'win32'))
-      .toBe(join('/user/local-app-data', 'dsh-antigravity-plus', 'auth.json'))
+      .toBe(join('/user/local-app-data', 'dsh-antigravity-auth', 'auth.json'))
+  })
+
+  it('prefers the stable auth store when both legacy and experimental Plus data exist', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'dsh-auth-path-'))
+    directories.push(directory)
+    const legacy = join(directory, 'dsh-antigravity-auth', 'auth.json')
+    const plus = join(directory, 'dsh-antigravity-plus', 'auth.json')
+    await mkdir(join(directory, 'dsh-antigravity-auth'), { recursive: true })
+    await mkdir(join(directory, 'dsh-antigravity-plus'), { recursive: true })
+    await writeFile(legacy, '{}')
+    await writeFile(plus, '{}')
+
+    expect(defaultAuthStorePath({ LOCALAPPDATA: directory }, undefined, 'win32')).toBe(legacy)
+  })
+
+  it('reuses existing Plus data when no stable auth store exists', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'dsh-auth-path-'))
+    directories.push(directory)
+    const plus = join(directory, 'dsh-antigravity-plus', 'auth.json')
+    await mkdir(join(directory, 'dsh-antigravity-plus'), { recursive: true })
+    await writeFile(plus, '{}')
+
+    expect(defaultAuthStorePath({ LOCALAPPDATA: directory }, undefined, 'win32')).toBe(plus)
   })
 
   it('ignores POSIX mode bits on Windows while preserving strict POSIX enforcement', async () => {

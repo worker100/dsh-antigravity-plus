@@ -1,10 +1,12 @@
-# dsh-antigravity-plus: Enhanced Antigravity capability bundle
+# The bootstrap shell keeps the capability rows independently addressable.
+# OAuth and private I/O stay on Host; each row owns its public capability seam and
+# rechecks shared auth, project, live-evidence, and settings gates before doing work.
 - insert:
-    - id: antigravity-auth
+    - id: antigravity-plus
       name: 'dsh-antigravity-plus'
-    - id: antigravity-search
+    - id: antigravity-plus-search
       name: 'dsh-antigravity-plus/search'
-    - id: antigravity-image
+    - id: antigravity-plus-image
       name: 'dsh-antigravity-plus/image'
-    - id: antigravity-video
+    - id: antigravity-plus-video
       name: 'dsh-antigravity-plus/video'

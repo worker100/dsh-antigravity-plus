@@ -85,18 +85,18 @@ describe('Antigravity client apply', () => {
     expect(inject).toEqual(['slots', 'locale', 'connection', 'configForms'])
     const b = bench()
 
-    expect(b.configForms.get).toHaveBeenCalledWith('antigravity-search')
-    expect(b.configForms.get).toHaveBeenCalledWith('antigravity-image')
-    expect(b.configForms.get).toHaveBeenCalledWith('antigravity-video')
+    expect(b.configForms.get).toHaveBeenCalledWith('antigravity-plus-search')
+    expect(b.configForms.get).toHaveBeenCalledWith('antigravity-plus-image')
+    expect(b.configForms.get).toHaveBeenCalledWith('antigravity-plus-video')
 
     expect(b.slots.map(record => record.options)).toEqual([
-      expect.objectContaining({ name: 'settings.section', id: 'antigravity-auth', order: 20 }),
+      expect.objectContaining({ name: 'settings.section', id: 'antigravity-plus', order: 20 }),
     ])
     const settings = b.slots[0]
     const props = (settings?.options.inject as (() => { rpc: { status: () => Promise<unknown> }; t: (key: AntigravityAuthKey) => string }) | undefined)?.()
     await props?.rpc.status()
-    expect(b.call).toHaveBeenCalledWith('/api', 'antigravity-auth/status', {}, undefined)
-    expect(props?.t('title')).toBe('Antigravity Auth')
+    expect(b.call).toHaveBeenCalledWith('/api', 'antigravity-plus/status', {}, undefined)
+    expect(props?.t('title')).toBe('Antigravity Plus')
 
     b.dispose()
     expect(b.slots).toHaveLength(0)

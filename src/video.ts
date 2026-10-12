@@ -27,13 +27,13 @@ import { classifyPrivateFailure, type PrivateFailureKind } from './private-failu
 import { mountCapabilityLifecycle, type CapabilityLifecycle } from './capability-lifecycle.ts'
 import { disableGeneratedSettingsPage, readConfigField, watchVolatileConfig, type ConfigField } from './config-fields.ts'
 
-export const name = 'antigravity-video'
+export const name = 'antigravity-plus-video'
 export const inject = ['tools', 'fs', 'antigravityAuth']
 export const ANALYZE_VIDEO_TOOL_NAME = 'analyze_video'
 export const UNDERSTAND_VIDEO_TOOL_NAME = ANALYZE_VIDEO_TOOL_NAME
 export const ANTIGRAVITY_VIDEO_ENDPOINT = `${ANTIGRAVITY_WIRE_ORIGIN}/v1internal:generateContent` as const
 export const ANTIGRAVITY_VIDEO_MODEL = 'antigravity-gemini-3.7-flash'
-export const ANTIGRAVITY_VIDEO_SETTINGS_NAMESPACE = 'antigravity-video'
+export const ANTIGRAVITY_VIDEO_SETTINGS_NAMESPACE = 'antigravity-plus-video'
 
 export interface AntigravityVideoSettings {
   readonly enabled: boolean
@@ -169,8 +169,8 @@ export function apply(ctx?: Context, config: LiveConfig = { enabled: true, model
     ...(readConfigField(config.maxBytes) === undefined ? {} : { maxBytes: readConfigField(config.maxBytes) }),
   })
   let lifecycle: CapabilityLifecycle | undefined
-  disableGeneratedSettingsPage(ctx, 'antigravity-video: settings presentation')
-  watchVolatileConfig(ctx, () => lifecycle?.sync(), 'antigravity-video: live config')
+  disableGeneratedSettingsPage(ctx, 'antigravity-plus-video: settings presentation')
+  watchVolatileConfig(ctx, () => lifecycle?.sync(), 'antigravity-plus-video: live config')
   const provided = candidate.get?.('antigravityAuth')
   const auth = isAuthService(provided) ? provided : createAntigravityAuthService()
   lifecycle = mountCapabilityLifecycle({
@@ -183,7 +183,7 @@ export function apply(ctx?: Context, config: LiveConfig = { enabled: true, model
       return () => { for (const dispose of disposers.reverse()) dispose() }
     },
     ownsAuth: auth !== provided,
-    label: 'antigravity-video: tool lifecycle',
+    label: 'antigravity-plus-video: tool lifecycle',
   })
 }
 

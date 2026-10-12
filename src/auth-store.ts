@@ -110,21 +110,21 @@ export function defaultAuthStorePath(
     const base = typeof windowsDataHome === 'string' && windowsDataHome.length > 0
       ? windowsDataHome
       : env.USERPROFILE ?? home ?? ''
-    const plusPath = join(base, 'dsh-antigravity-plus', 'auth.json')
-    if (existsSync(plusPath)) return plusPath
     const legacyPath = join(base, 'dsh-antigravity-auth', 'auth.json')
+    const plusPath = join(base, 'dsh-antigravity-plus', 'auth.json')
     if (existsSync(legacyPath)) return legacyPath
-    return plusPath
+    if (existsSync(plusPath)) return plusPath
+    return legacyPath
   }
   const dataHome = env.XDG_DATA_HOME
   const base = typeof dataHome === 'string' && dataHome.length > 0
     ? dataHome
     : join(home ?? '', '.local', 'share')
-  const plusPath = join(base, 'dsh-antigravity-plus', 'auth.json')
-  if (existsSync(plusPath)) return plusPath
   const legacyPath = join(base, 'dsh-antigravity-auth', 'auth.json')
+  const plusPath = join(base, 'dsh-antigravity-plus', 'auth.json')
   if (existsSync(legacyPath)) return legacyPath
-  return plusPath
+  if (existsSync(plusPath)) return plusPath
+  return legacyPath
 }
 
 /** Try importing seed account from existing system locations if store is empty. */

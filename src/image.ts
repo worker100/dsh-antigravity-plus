@@ -36,13 +36,13 @@ import { classifyPrivateFailure, type PrivateFailureKind } from './private-failu
 import { mountCapabilityLifecycle, registerCapabilitySet, type CapabilityLifecycle } from './capability-lifecycle.ts'
 import { disableGeneratedSettingsPage, readConfigField, watchVolatileConfig, type ConfigField } from './config-fields.ts'
 
-export const name = 'antigravity-image'
+export const name = 'antigravity-plus-image'
 export const inject = ['tools', 'attachments', 'fs', 'antigravityAuth']
 export const GENERATE_IMAGE_TOOL_NAME = 'generate_image'
 export const LIST_IMAGES_TOOL_NAME = 'list_images'
 export const ANTIGRAVITY_IMAGE_ENDPOINT = `${ANTIGRAVITY_WIRE_ORIGIN}/v1internal:generateContent` as const
 export const ANTIGRAVITY_IMAGE_MODEL = 'antigravity-gemini-3.1-flash-image'
-export const ANTIGRAVITY_IMAGE_SETTINGS_NAMESPACE = 'antigravity-image'
+export const ANTIGRAVITY_IMAGE_SETTINGS_NAMESPACE = 'antigravity-plus-image'
 
 export interface Config {
   readonly enabled: boolean
@@ -363,8 +363,8 @@ export function apply(ctx?: Context, config: LiveConfig = { enabled: true, model
     n: readConfigField(config.n),
   })
   let lifecycle: CapabilityLifecycle | undefined
-  disableGeneratedSettingsPage(ctx, 'antigravity-image: settings presentation')
-  watchVolatileConfig(ctx, () => lifecycle?.sync(), 'antigravity-image: live config')
+  disableGeneratedSettingsPage(ctx, 'antigravity-plus-image: settings presentation')
+  watchVolatileConfig(ctx, () => lifecycle?.sync(), 'antigravity-plus-image: live config')
   const provided = candidate.get?.('antigravityAuth')
   const auth = isAuthService(provided) ? provided : createAntigravityAuthService()
   const options: AntigravityImageToolOptions = { auth, attachments: candidate.attachments!, fs: candidate.fs!, settings: () => current() }
@@ -378,7 +378,7 @@ export function apply(ctx?: Context, config: LiveConfig = { enabled: true, model
       tool => candidate.tools!.register(tool),
     ),
     ownsAuth: auth !== provided,
-    label: 'antigravity-image: tool lifecycle',
+    label: 'antigravity-plus-image: tool lifecycle',
   })
 }
 

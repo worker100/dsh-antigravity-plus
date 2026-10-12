@@ -57,7 +57,7 @@ export async function admitImageBytes(
   options: Pick<MediaAdmissionOptions, 'attachments'>,
   data: Uint8Array,
   source: AdmittedImage['source'],
-  name = 'antigravity-image',
+  name = 'antigravity-plus-image',
   signal?: AbortSignal,
 ): Promise<AdmittedImage> {
   throwIfAborted(signal)
@@ -280,7 +280,7 @@ function isCanonicalBase64(value: string): boolean {
 
 function safeName(value: string): string {
   const base = [...basename(value)].map(character => character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127 || character === '/' || character === '\\' ? '_' : character).join('').slice(0, 256)
-  return base.length > 0 ? base : 'antigravity-image'
+  return base.length > 0 ? base : 'antigravity-plus-image'
 }
 
 function basename(value: string): string {

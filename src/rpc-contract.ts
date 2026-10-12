@@ -25,7 +25,7 @@ import { isSafeRpcErrorCode, safeRpcErrorMessage } from './rpc-vocabulary.ts'
 import { isBoundedSafeText } from './safe-text.ts'
 
 export const ANTIGRAVITY_AUTH_RPC_CHANNEL = '/api'
-export const ANTIGRAVITY_AUTH_RPC_NAMESPACE = 'antigravity-auth' as const
+export const ANTIGRAVITY_AUTH_RPC_NAMESPACE = 'antigravity-plus' as const
 
 export interface AntigravityAuthRpcClient {
   status(signal?: AbortSignal): Promise<RpcResult<{ status: AntigravityStatusView }>>
@@ -197,7 +197,7 @@ function parseStatus(value: unknown): AntigravityStatusView | undefined {
       'accounts',
       'activeAccountId',
     ])
-    || (value.pluginId !== 'dsh-antigravity-plus' && value.pluginId !== 'dsh-antigravity-auth')
+    || value.pluginId !== 'dsh-antigravity-plus'
     || value.phase !== 'bootstrap'
     || value.privateSelfUse !== true
     || value.singleAccount !== false
@@ -502,7 +502,7 @@ function invalidResponse(endpoint: string): RpcResult<never> {
     ok: false,
     error: {
       code: 'internal',
-      message: `antigravity-auth: invalid ${endpoint} response from Host`,
+      message: `antigravity-plus: invalid ${endpoint} response from Host`,
       details: {},
     },
   }

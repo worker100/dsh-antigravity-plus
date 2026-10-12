@@ -1,6 +1,6 @@
 import { attributionHeaders } from '@deepseek-ai/dsh-llm'
 import { describe, expect, it } from 'vitest'
-import { DSH_ATTRIBUTION_HEADER, createWireIdentity } from 'dsh-antigravity-auth/wire-identity'
+import { DSH_ATTRIBUTION_HEADER, createWireIdentity } from 'dsh-antigravity-plus/wire-identity'
 
 describe('Wire Identity public DSH attribution seam', () => {
   it('forwards the value produced by DSH attributionHeaders()', () => {

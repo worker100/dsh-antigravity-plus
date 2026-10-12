@@ -5,7 +5,6 @@ import type { CredentialStatusView, LogoutResult, RevokeActionResult, RevokeStat
 import type { QuotaStatusView } from './quota.ts'
 
 export const ANTIGRAVITY_PLUGIN_ID = 'dsh-antigravity-plus' as const
-export const LEGACY_ANTIGRAVITY_PLUGIN_ID = 'dsh-antigravity-auth' as const
 export const CAPABILITY_ROW_IDS = ['auth-llm', 'search', 'image', 'video'] as const
 export const LLM_FAMILY_IDS = ['gemini', 'claude', 'gpt-oss'] as const
 

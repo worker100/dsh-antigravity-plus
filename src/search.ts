@@ -25,12 +25,12 @@ import { classifyPrivateFailure, type PrivateFailureKind } from './private-failu
 import { mountCapabilityLifecycle, type CapabilityLifecycle } from './capability-lifecycle.ts'
 import { disableGeneratedSettingsPage, readConfigField, watchVolatileConfig, type ConfigField } from './config-fields.ts'
 
-export const name = 'antigravity-search'
+export const name = 'antigravity-plus-search'
 export const inject = ['web', 'antigravityAuth']
 export const ANTIGRAVITY_SEARCH_PROVIDER_ID = 'antigravity'
 export const ANTIGRAVITY_SEARCH_ENDPOINT = `${ANTIGRAVITY_WIRE_ORIGIN}/v1internal:generateContent` as const
 export const ANTIGRAVITY_SEARCH_MODEL = 'antigravity-gemini-3.7-flash'
-export const ANTIGRAVITY_SEARCH_SETTINGS_NAMESPACE = 'antigravity-search'
+export const ANTIGRAVITY_SEARCH_SETTINGS_NAMESPACE = 'antigravity-plus-search'
 
 export interface AntigravitySearchSettings {
   enabled: boolean
@@ -152,8 +152,8 @@ export function apply(ctx?: Context, config: LiveConfig = { enabled: true, model
     maxResults: readConfigField(config.maxResults),
   })
   let lifecycle: CapabilityLifecycle | undefined
-  disableGeneratedSettingsPage(ctx, 'antigravity-search: settings presentation')
-  watchVolatileConfig(ctx, () => lifecycle?.sync(), 'antigravity-search: live config')
+  disableGeneratedSettingsPage(ctx, 'antigravity-plus-search: settings presentation')
+  watchVolatileConfig(ctx, () => lifecycle?.sync(), 'antigravity-plus-search: live config')
   const provided = candidate.get?.('antigravityAuth')
   const auth = isAuthService(provided) ? provided : createAntigravityAuthService()
   lifecycle = mountCapabilityLifecycle({
@@ -163,7 +163,7 @@ export function apply(ctx?: Context, config: LiveConfig = { enabled: true, model
     enabled: () => current().enabled,
     register: () => candidate.web!.registerSearchProvider(new AntigravitySearchProvider({ auth, settings: () => current() })),
     ownsAuth: auth !== provided,
-    label: 'antigravity-search: provider lifecycle',
+    label: 'antigravity-plus-search: provider lifecycle',
   })
 }
 

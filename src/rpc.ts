@@ -87,7 +87,7 @@ function badRequest(message: string): RpcResult<never> {
 }
 
 function cancelled(): RpcResult<never> {
-  return { ok: false, error: { code: 'cancelled', message: 'antigravity-auth: request cancelled', details: {} } }
+  return { ok: false, error: { code: 'cancelled', message: 'antigravity-plus: request cancelled', details: {} } }
 }
 
 function safeFailure(error: unknown): RpcResult<never> {

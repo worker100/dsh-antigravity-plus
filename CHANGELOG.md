@@ -1,13 +1,11 @@
 # Changelog
 
-All notable changes to `dsh-antigravity-plus` will be documented in this file.
+## 0.2.0-rc.1 - Unreleased
 
-## [0.2.0] - 2026-10-10
+- Rebase the public Plus project on the stable `dsh-antigravity-auth` implementation currently used by DSH Desktop.
+- Rename the package, bundle identifiers, settings section, RPC namespace, and slash command to DSH Antigravity Plus.
+- Keep the existing `dsh-antigravity-auth` account-store path so Desktop can switch back without moving credentials.
+- Remove the experimental proxy auto-detection and local-port scanning implementation. Document environment-variable proxy behavior and mainland China setup.
+- Add a reusable Chinese Agent installation and rollback prompt.
 
-### Added
-- **Smart Proxy Engine**: Automatic detection for common local proxy client inbounds (Clash/Mihomo 7890/7897, v2rayN/Xray 10809, Surge 6152), environment variable fallback, direct connection mode, and user-friendly bilingual connection diagnostics.
-- **Multi-Account Quota Failover**: Bounded automatic failover to alternative accounts on quota exhaustion (429 / RESOURCE_EXHAUSTED) before any token generation is emitted.
-- **Quick Terminal Commands**: Introduced `/anti` slash command with instant subcommands (`status`, `login`, `switch`, `list`, `proxy`), while maintaining full backwards compatibility with `/antigravity-auth`.
-- **Visual Network Settings Card**: Interactive proxy configuration card in DSH settings with Auto, Direct, and Custom Proxy modes.
-- **Omni-Modal Tool Suite**: Fully registered `google-antigravity` LLM adapter (Gemini 3.8/Claude 3.7), grounded `web_search`, session-persistent `generate_image` & `list_images`, and local workspace MP4 `analyze_video`.
-- **DSH 0.2.0-rc.2 Alignment**: Strict compatibility with DSH 0.2.0-rc.2, Cordis 4.0.4, and Schemastery 3.18.4 across Web and Desktop profiles.
+No npm package has been published for this release candidate.

@@ -3,7 +3,6 @@
 import type { AntigravityAuthRecord, AntigravityAuthStore } from './auth-store.ts'
 import { ANTIGRAVITY_CLIENT_ID, ANTIGRAVITY_CLIENT_SECRET } from '@cortexkit/antigravity-auth-core'
 import { isBoundedSafeText } from './safe-text.ts'
-import { createSmartFetch } from './smart-proxy.ts'
 
 export const ANTIGRAVITY_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token' as const
 export const ANTIGRAVITY_REVOKE_ENDPOINT = 'https://oauth2.googleapis.com/revoke' as const
@@ -584,7 +583,7 @@ export function createCredentialCoordinator(options: CredentialCoordinatorOption
 }
 
 export function createGoogleRefreshTransport(
-  fetchImpl: typeof fetch = createSmartFetch(globalThis.fetch),
+  fetchImpl: typeof fetch = globalThis.fetch,
   now: () => number = () => Date.now(),
 ): RefreshAccessToken {
   return async ({ refreshToken, signal }) => {
@@ -636,7 +635,7 @@ export function createGoogleRefreshTransport(
   }
 }
 
-export function createGoogleRevokeTransport(fetchImpl: typeof fetch = createSmartFetch(globalThis.fetch)): RevokeGrant {
+export function createGoogleRevokeTransport(fetchImpl: typeof fetch = globalThis.fetch): RevokeGrant {
   return async ({ token, signal }) => {
     let response: Response
     try {

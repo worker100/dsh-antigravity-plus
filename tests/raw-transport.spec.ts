@@ -163,7 +163,7 @@ describe('fixed private raw transport', () => {
 
   it('identifies an unavailable configured proxy before any private request is dispatched', async () => {
     delete process.env.NO_PROXY
-    process.env.HTTPS_PROXY = 'http://127.0.0.1:7897'
+    process.env.HTTPS_PROXY = 'http://127.0.0.1:18080'
     socketState.proxyConnectError = true
 
     const error = await createPrivateTransport().request({

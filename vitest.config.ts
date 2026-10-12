@@ -7,10 +7,10 @@ const projectRoot = fileURLToPath(new URL('.', import.meta.url))
 export default defineConfig({
   resolve: {
     alias: {
-      'dsh-antigravity-auth/wire-identity': resolve(projectRoot, 'src/wire-identity.ts'),
-      'dsh-antigravity-auth/invariant': resolve(projectRoot, 'src/invariant.ts'),
-      'dsh-antigravity-auth/project-context': resolve(projectRoot, 'src/project-context.ts'),
-      'dsh-antigravity-auth': resolve(projectRoot, 'src/index.ts'),
+      'dsh-antigravity-plus/wire-identity': resolve(projectRoot, 'src/wire-identity.ts'),
+      'dsh-antigravity-plus/invariant': resolve(projectRoot, 'src/invariant.ts'),
+      'dsh-antigravity-plus/project-context': resolve(projectRoot, 'src/project-context.ts'),
+      'dsh-antigravity-plus': resolve(projectRoot, 'src/index.ts'),
     },
   },
   test: {
